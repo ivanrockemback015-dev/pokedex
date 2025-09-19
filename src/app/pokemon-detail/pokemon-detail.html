@@ -1,0 +1,26 @@
+<div class="detail-container" *ngIf="!isLoading; else loading">
+  <div *ngIf="pokemon; else error">
+    <a routerLink="/" class="back-button">Voltar</a>
+    <div class="hologram-container">
+      <div class="hologram-base"></div>
+      <div class="hologram-projection">
+        <img [src]="currentImageUrl" alt="{{ pokemon.name }}" class="pokemon-image" />
+      </div>
+    </div>
+    <div class="pokemon-info-detail">
+      <h2>{{ pokemon.name | capitalize }}</h2>
+      <p>#{{ pokemon.id.toString().padStart(3, '0') }}</p>
+      <button class="attack-button" (click)="playAttackAnimation()">Play Attack Animation</button>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="loading">Carregando...</div>
+</ng-template>
+
+<ng-template #error>
+  <div class="error-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+</ng-template>

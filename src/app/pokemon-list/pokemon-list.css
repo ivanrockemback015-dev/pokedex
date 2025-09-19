@@ -1,0 +1,408 @@
+:host {
+  --grass: #78C850;
+  --fire: #F08030;
+  --water: #6890F0;
+  --bug: #A8B820;
+  --normal: #A8A878;
+  --poison: #A040A0;
+  --electric: #F8D030;
+  --ground: #E0C068;
+  --fairy: #EE99AC;
+  --fighting: #C03028;
+  --psychic: #F85858;
+  --rock: #B8A038;
+  --ghost: #705898;
+  --ice: #98D8D8;
+  --dragon: #7038F8;
+  --dark: #705848;
+  --steel: #B8B8D0;
+  --flying: #A890F0;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 25px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pokemon-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.pokemon-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  border-radius: 15px;
+  background-color: #fff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.pokemon-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.play-sound-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  transition: background-color 0.3s ease;
+}
+
+.play-sound-button:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.play-icon {
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 10px solid white;
+  margin-left: 3px;
+}
+
+.pokemon-image-container {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 15px;
+  position: relative;
+  perspective: 1000px;
+}
+
+.card-flipper {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.card-flipper.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+.pokemon-image-container img {
+  object-fit: contain;
+}
+
+.pokemon-info {
+  text-align: center;
+}
+
+.pokemon-id {
+  font-size: 0.9em;
+  color: #888;
+  font-weight: bold;
+}
+
+.pokemon-name {
+  margin: 5px 0;
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #333;
+}
+
+.pokemon-types {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+.type-badge {
+  padding: 5px 10px;
+  border-radius: 15px;
+  color: #fff;
+  font-size: 0.8em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.loading, .error-message {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2em;
+}
+
+.error-message {
+  color: #D8000C;
+  background-color: #FFD2D2;
+  border: 1px solid #D8000C;
+  border-radius: 10px;
+  margin: 20px auto;
+  max-width: 600px;
+}
+
+/* Type Colors */
+.type-grass { background-color: var(--grass); }
+.type-fire { background-color: var(--fire); }
+.type-water { background-color: var(--water); }
+.type-bug { background-color: var(--bug); }
+.type-normal { background-color: var(--normal); }
+.type-poison { background-color: var(--poison); }
+.type-electric { background-color: var(--electric); }
+.type-ground { background-color: var(--ground); }
+.type-fairy { background-color: var(--fairy); }
+.type-fighting { background-color: var(--fighting); }
+.type-psychic { background-color: var(--psychic); }
+.type-rock { background-color: var(--rock); }
+.type-ghost { background-color: var(--ghost); }
+.type-ice { background-color: var(--ice); }
+.type-dragon { background-color: var(--dragon); }
+.type-dark { background-color: var(--dark); }
+.type-steel { background-color: var(--steel); }
+.type-flying { background-color: var(--flying); }
+
+/* Search and Filter Controls */
+.search-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  flex-wrap: wrap;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.search-controls input[type="text"],
+.search-controls select {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1em;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+.search-controls input[type="text"]:focus,
+.search-controls select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.search-controls button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-controls button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-controls button:active {
+  background-color: #004085;
+}
+
+.search-controls button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Pagination Styles */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  padding-bottom: 20px;
+  gap: 8px; /* Adjusted gap */
+  flex-wrap: wrap; /* Allow buttons to wrap to the next line */
+}
+
+.pagination-controls button {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px; /* More rounded corners, similar to cards */
+  padding: 10px 16px; /* Adjusted padding for better dimensions */
+  cursor: pointer;
+  font-size: 1em; /* Increased font size */
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* More prominent shadow */
+  min-width: 48px; /* Increased min-width for better sizing */
+  height: 48px; /* Increased height for better sizing */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* More prominent hover shadow */
+  background-color: #f0f0f0; /* Lighter hover background */
+  border-color: #bbb;
+}
+
+.pagination-controls button.active {
+  background-color: #007bff; /* PrimeNG-like blue for active state */
+  color: white;
+  border-color: #007bff;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3); /* Shadow matching active color */
+  font-weight: bold;
+}
+
+.pagination-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
+  background-color: #f9f9f9;
+  border-color: #eee;
+  color: #999;
+}
+
+/* Specific styles for Previous/Next buttons */
+.pagination-controls button:first-child,
+.pagination-controls button:last-child {
+  padding: 10px 20px; /* More padding for Previous/Next text */
+  min-width: 90px; /* Increased min-width for Previous/Next */
+}
+
+.pagination-ellipsis {
+  padding: 10px 0; /* Adjust padding to align with buttons */
+  font-size: 1em; /* Match button font size */
+  color: #666; /* Softer color for ellipsis */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px; /* Match button min-width */
+  height: 48px; /* Match button height */
+}
+
+/* New Dialog Styles */
+.new-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.new-dialog-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative;
+  max-width: 500px;
+  width: 90%;
+}
+
+.new-dialog-content h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.8em;
+  margin-bottom: 20px;
+}
+
+.new-dialog-content .filter-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.new-dialog-content .filter-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+  font-weight: bold;
+}
+
+.new-dialog-content .filter-group select {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1em;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.new-dialog-content .filter-group select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.new-dialog-content .dialog-actions {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.new-dialog-content .dialog-actions button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.new-dialog-content .dialog-actions button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.new-dialog-content .dialog-actions button:active {
+  background-color: #004085;
+}
+
+.new-dialog-content .dialog-actions button:last-child {
+  background-color: #6c757d; /* Grey for Close button */
+}
+
+.new-dialog-content .dialog-actions button:last-child:hover {
+  background-color: #5a6268;
+}

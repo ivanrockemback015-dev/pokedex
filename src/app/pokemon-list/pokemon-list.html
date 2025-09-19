@@ -1,0 +1,99 @@
+<div class="search-controls">
+  <input type="text" [(ngModel)]="searchTerm" placeholder="Search by name or ID" (input)="onSearchTermChange()">
+  <button (click)="searchPokemon(searchTerm)">Search</button>
+  <button (click)="resetSearch()" *ngIf="searchTerm || isSearching || selectedType || selectedGeneration || selectedAbility || selectedWeakness">Clear Search</button>
+
+  <button (click)="openNewDialog()">Filtros Avançados</button>
+</div>
+
+<div class="container" *ngIf="!isLoading; else loading">
+  <div *ngFor="let pokemon of pokemons; let i = index" class="pokemon-card">
+    <button class="play-sound-button" (click)="playSound(pokemon, $event)">
+      <span class="play-icon"></span>
+    </button>
+    <div class="pokemon-image-container">
+      <div class="card-flipper" [class.flipped]="pokemon.showBack && pokemon.sprites.back_default">
+        <div class="card-front">
+          <img *ngIf="pokemon.sprites.front_default" [src]="pokemon.sprites.front_default" alt="{{ pokemon.name }}" width="150" height="150" />
+          <img *ngIf="!pokemon.sprites.front_default" [src]="fallbackImageDataUri" alt="No image available" class="fallback-image" width="150" height="150" />
+        </div>
+        <div class="card-back" *ngIf="pokemon.sprites.back_default">
+          <img *ngIf="pokemon.sprites.back_default" [src]="pokemon.sprites.back_default" alt="{{ pokemon.name }} (back)" width="150" height="150" />
+          <img *ngIf="!pokemon.sprites.back_default" [src]="fallbackImageDataUri" alt="No image available" class="fallback-image" width="150" height="150" />
+        </div>
+      </div>
+    </div>
+    <div class="pokemon-info">
+      <p class="pokemon-id">#{{ pokemon.id.toString().padStart(3, '0') }}</p>
+      <h3 class="pokemon-name">{{ pokemon.name | capitalize }}</h3>
+      <div class="pokemon-types">
+        <span *ngFor="let typeInfo of pokemon.types" class="type-badge type-{{ typeInfo.type.name }}">
+          {{ typeInfo.type.name | capitalize }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="loading">Carregando...</div>
+</ng-template>
+
+<div *ngIf="errorMessage" class="error-message">
+  {{ errorMessage }}
+</div>
+
+<div class="pagination-controls" *ngIf="!isLoading && totalPages > 1 && !isSearching && !selectedType && !selectedGeneration && !selectedAbility && !selectedWeakness">
+  <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+  <ng-container *ngFor="let pageItem of pageNumbers">
+    <button *ngIf="typeof pageItem === 'number'" (click)="goToPage(pageItem)" [class.active]="currentPage === pageItem">
+      {{ pageItem }}
+    </button>
+    <span *ngIf="typeof pageItem === 'string'" class="pagination-ellipsis">{{ pageItem }}</span>
+  </ng-container>
+  <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+</div>
+
+<!-- Advanced Filters Dialog -->
+<div class="new-dialog-overlay" *ngIf="isNewDialogVisible" (click)="closeNewDialog()">
+  <div class="new-dialog-content" (click)="$event.stopPropagation()">
+    <h3>Filtros Avançados</h3>
+
+    <div class="filter-group">
+      <label for="type-select">Tipo:</label>
+      <select id="type-select" [(ngModel)]="selectedType" (change)="onTypeChange()">
+        <option [ngValue]="null">Todos os Tipos</option>
+        <option *ngFor="let type of allTypes" [value]="type">{{ type | capitalize }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="weakness-select">Fraqueza:</label>
+      <select id="weakness-select" [(ngModel)]="selectedWeakness" (change)="onWeaknessChange()">
+        <option [ngValue]="null">Todas as Fraquezas</option>
+        <option *ngFor="let weakness of allWeaknesses" [value]="weakness">{{ weakness | capitalize }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="generation-select">Geração:</label>
+      <select id="generation-select" [(ngModel)]="selectedGeneration" (change)="onGenerationChange()">
+        <option [ngValue]="null">Todas as Gerações</option>
+        <option *ngFor="let gen of allGenerations" [value]="gen">{{ gen | capitalize }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="ability-select">Habilidade:</label>
+      <select id="ability-select" [(ngModel)]="selectedAbility" (change)="onAbilityChange()">
+        <option [ngValue]="null">Todas as Habilidades</option>
+        <option *ngFor="let ability of allAbilities" [value]="ability">{{ ability | capitalize }}</option>
+      </select>
+    </div>
+
+    <div class="dialog-actions">
+      <button (click)="applyAdvancedFilters()">Aplicar Filtros</button>
+      <button (click)="closeNewDialog()">Fechar</button>
+    </div>
+  </div>
+</div>
