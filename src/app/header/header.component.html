@@ -1,0 +1,80 @@
+<header class="pokedex-header">
+  <div class="header-top-bar">
+    <div class="blue-led"></div>
+    <div class="small-leds">
+      <div class="led red"></div>
+      <div class="led yellow"></div>
+      <div class="led green"></div>
+    </div>
+  </div>
+  <div class="header-main-content">
+    <h1 class="pokedex-logo">Pokédex</h1>
+    <div class="right-panel">
+      <div class="pokedex-screen">
+        <div class="search-controls">
+          <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar por nome ou ID" (input)="onSearchTermChange()">
+          <button (click)="applyFilters()">Buscar</button>
+        </div>
+        <div class="filter-buttons">
+          <button (click)="openNewDialog()">Filtros Avançados</button>
+          <button (click)="resetSearch()" *ngIf="searchTerm || isSearching || selectedTypes.length > 0 || selectedGenerations.length > 0 || selectedAbilities.length > 0 || selectedWeaknesses.length > 0">Limpar</button>
+        </div>
+      </div>
+      <div class="pokedex-buttons">
+        <div class="d-pad">
+          <div class="d-pad-center"></div>
+        </div>
+        <div class="round-button-group">
+          <div class="round-button"></div>
+          <div class="round-button"></div>
+        </div>
+      </div>
+      <div class="speaker-grill">
+        <div class="grill-line"></div>
+        <div class="grill-line"></div>
+        <div class="grill-line"></div>
+        <div class="grill-line"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Advanced Filters Dialog -->
+<div class="new-dialog-overlay" *ngIf="isNewDialogVisible" (click)="closeNewDialog()">
+  <div class="new-dialog-content" (click)="$event.stopPropagation()">
+    <h3>Filtros Avançados</h3>
+
+    <div class="filter-group">
+      <label for="type-select">Tipo:</label>
+      <select multiple id="type-select" [(ngModel)]="selectedTypes" (ngModelChange)="onFilterChange()">
+        <option *ngFor="let type of allTypes" [value]="type">{{ type | capitalize }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="weakness-select">Fraqueza:</label>
+      <select multiple id="weakness-select" [(ngModel)]="selectedWeaknesses" (ngModelChange)="onFilterChange()">
+        <option *ngFor="let weakness of allWeaknesses" [value]="weakness">{{ weakness | capitalize }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="generation-select">Geração:</label>
+      <select multiple id="generation-select" [(ngModel)]="selectedGenerations" (ngModelChange)="onFilterChange()">
+        <option *ngFor="let gen of allGenerations" [value]="gen">{{ gen | capitalize }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="ability-select">Habilidade:</label>
+      <select multiple id="ability-select" [(ngModel)]="selectedAbilities" (ngModelChange)="onFilterChange()">
+        <option *ngFor="let ability of allAbilities" [value]="ability">{{ ability | capitalize }}</option>
+      </select>
+    </div>
+
+    <div class="dialog-actions">
+      <button (click)="applyAdvancedFilters()">Aplicar Filtros</button>
+      <button (click)="closeNewDialog()">Fechar</button>
+    </div>
+  </div>
+</div>

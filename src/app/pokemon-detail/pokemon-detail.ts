@@ -31,7 +31,7 @@ export class PokemonDetailComponent implements OnInit {
       this.pokemonService.getPokemonById(+id).subscribe({
         next: (data: PokemonDetail) => {
           this.pokemon = data;
-          this.currentImageUrl = (this.pokemon.sprites.other['official-artwork'].front_default || FALLBACK_IMAGE_DATA_URI) as string; // Line 51
+          this.currentImageUrl = (this.pokemon.sprites.other['official-artwork'].front_default || FALLBACK_IMAGE_DATA_URI) as string;
           this.isLoading = false;
         },
         error: (error: any) => {
@@ -42,20 +42,11 @@ export class PokemonDetailComponent implements OnInit {
     }
   }
 
-  playAttackAnimation(): void {
-    if (this.pokemon) {
-      const animatedUrl = this.pokemon.sprites.versions?.['generation-v']?.['black-white']?.animated?.front_default;
-      const staticUrl = this.pokemon.sprites.other['official-artwork'].front_default;
-
-      if (animatedUrl) {
-        this.currentImageUrl = (animatedUrl || FALLBACK_IMAGE_DATA_URI) as string;
-        setTimeout(() => {
-          this.currentImageUrl = (staticUrl || FALLBACK_IMAGE_DATA_URI) as string;
-        }, 2000); // Animation duration
-      } else {
-        // If no animated URL, just ensure it's the static one or fallback
-        this.currentImageUrl = (staticUrl || FALLBACK_IMAGE_DATA_URI) as string;
-      }
+  playSound(pokemon: PokemonDetail, event: MouseEvent): void {
+    event.stopPropagation();
+    if (pokemon.cries && pokemon.cries.latest) {
+      const audio = new Audio(pokemon.cries.latest);
+      audio.play();
     }
   }
 }

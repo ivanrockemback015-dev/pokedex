@@ -36,10 +36,6 @@ interface GenerationListResponse {
   results: { name: string; url: string }[];
 }
 
-interface PokemonOfGenerationResponse {
-  pokemon_species: { name: string; url: string }[];
-}
-
 interface AbilityListResponse {
   count: number;
   next: string | null;
@@ -49,6 +45,10 @@ interface AbilityListResponse {
 
 interface PokemonOfTypeResponse {
   pokemon: { pokemon: { name: string; url: string } }[];
+}
+
+interface PokemonOfGenerationResponse {
+  pokemon_species: { name: string; url: string }[];
 }
 
 interface PokemonOfAbilityResponse {
@@ -63,18 +63,6 @@ export interface PokemonBasicInfo {
 export interface PokemonDetail {
   id: number;
   name: string;
-  abilities: {
-    ability: {
-      name: string;
-      url: string;
-    };
-  }[];
-  stats: {
-    base_stat: number;
-    stat: {
-      name: string;
-    };
-  }[];
   sprites: {
     front_default: string | null;
     back_default: string | null;
@@ -156,13 +144,16 @@ export class PokemonService {
     );
   }
 
-  getPokemonByType(type: string): Observable<PokemonBasicInfo[]> {
+  getPokemonByType(type: string): Observable<PokemonDetail[]> {
     return this.http.get<PokemonOfTypeResponse>(`${this.typeApiUrl}/${type}`).pipe(
-      map(response => {
-        if (!response || !response.pokemon) {
-          return [];
+      switchMap(response => {
+        if (!response || !response.pokemon || response.pokemon.length === 0) {
+          return of<PokemonDetail[]>([]);
         }
-        return response.pokemon.map(p => ({ name: p.pokemon.name, url: p.pokemon.url }));
+        const pokemonRequests: Observable<PokemonDetail>[] = response.pokemon.map(p =>
+          this.http.get<PokemonDetail>(p.pokemon.url)
+        );
+        return forkJoin(pokemonRequests);
       })
     );
   }
@@ -173,17 +164,16 @@ export class PokemonService {
     );
   }
 
-  getPokemonByGeneration(generation: string): Observable<PokemonBasicInfo[]> {
+  getPokemonByGeneration(generation: string): Observable<PokemonDetail[]> {
     return this.http.get<PokemonOfGenerationResponse>(`${this.generationApiUrl}/${generation}`).pipe(
-      map(response => {
-        if (!response || !response.pokemon_species) {
-          return [];
+      switchMap(response => {
+        if (!response || !response.pokemon_species || response.pokemon_species.length === 0) {
+          return of<PokemonDetail[]>([]);
         }
-        return response.pokemon_species.map(p => {
-          const urlParts = p.url.split('/').filter(Boolean);
-          const id = urlParts[urlParts.length - 1];
-          return { name: p.name, url: `${this.apiUrl}/${id}/` };
-        });
+        const pokemonRequests: Observable<PokemonDetail>[] = response.pokemon_species.map(p =>
+          this.http.get<PokemonDetail>(`${this.apiUrl}/${p.name}`)
+        );
+        return forkJoin(pokemonRequests);
       })
     );
   }
@@ -194,13 +184,16 @@ export class PokemonService {
     );
   }
 
-  getPokemonByAbility(ability: string): Observable<PokemonBasicInfo[]> {
+  getPokemonByAbility(ability: string): Observable<PokemonDetail[]> {
     return this.http.get<PokemonOfAbilityResponse>(`${this.abilityApiUrl}/${ability}`).pipe(
-      map(response => {
-        if (!response || !response.pokemon) {
-          return [];
+      switchMap(response => {
+        if (!response || !response.pokemon || response.pokemon.length === 0) {
+          return of<PokemonDetail[]>([]);
         }
-        return response.pokemon.map(p => ({ name: p.pokemon.name, url: p.pokemon.url }));
+        const pokemonRequests: Observable<PokemonDetail>[] = response.pokemon.map(p =>
+          this.http.get<PokemonDetail>(p.pokemon.url)
+        );
+        return forkJoin(pokemonRequests);
       })
     );
   }
@@ -216,7 +209,6 @@ export class PokemonService {
         return forkJoin(typeDetailRequests).pipe(
           map(results => Object.assign({}, ...results)) // Combine all type details into a single object
         );
-      })
-    );
+      })\n    );
   }
 }

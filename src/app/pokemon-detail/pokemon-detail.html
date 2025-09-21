@@ -1,16 +1,54 @@
 <div class="detail-container" *ngIf="!isLoading; else loading">
-  <div *ngIf="pokemon; else error">
-    <a routerLink="/" class="back-button">Voltar</a>
-    <div class="hologram-container">
-      <div class="hologram-base"></div>
-      <div class="hologram-projection">
-        <img [src]="currentImageUrl" alt="{{ pokemon.name }}" class="pokemon-image" />
+  <div *ngIf="pokemon; else error" class="pokemon-display-area">
+    <a routerLink="/" class="back-button">Voltar à Pokédex</a>
+
+    <!-- Coluna da Esquerda: Holograma -->
+    <div class="pokemon-hologram">
+      <div class="hologram-container">
+        <div class="hologram-base"></div>
+        <div class="hologram-projection">
+          <img [src]="currentImageUrl" alt="{{ pokemon.name }}" class="pokemon-image" />
+        </div>
       </div>
     </div>
-    <div class="pokemon-info-detail">
-      <h2>{{ pokemon.name | capitalize }}</h2>
-      <p>#{{ pokemon.id.toString().padStart(3, '0') }}</p>
-      <button class="attack-button" (click)="playAttackAnimation()">Play Attack Animation</button>
+
+    <!-- Coluna da Direita: Detalhes e Atributos -->
+    <div class="pokemon-stats-area">
+      <div class="pokemon-info-header">
+        <h3>{{ pokemon.name | capitalize }}</h3>
+        <button class="play-sound-button-detail" (click)="playSound(pokemon, $event)" title="Ouvir grito">
+          <span class="play-icon"></span>
+        </button>
+      </div>
+      <p class="pokemon-id-detail">#{{ pokemon.id.toString().padStart(3, '0') }}</p>
+
+      <div class="details-section">
+        <div class="detail-item">
+          <strong>Tipos:</strong>
+          <div class="types-container">
+            <span *ngFor="let typeInfo of pokemon.types" class="type-badge type-{{ typeInfo.type.name }}">
+              {{ typeInfo.type.name | capitalize }}
+            </span>
+          </div>
+        </div>
+        <div class="detail-item">
+          <strong>Habilidades:</strong>
+          <ul>
+            <li *ngFor="let abilityInfo of pokemon.abilities">{{ abilityInfo.ability.name | capitalize }}</li>
+          </ul>
+        </div>
+      </div>
+
+      <h4>Atributos Base</h4>
+      <div class="stats-container">
+        <div *ngFor="let stat of pokemon.stats" class="stat-item">
+          <span class="stat-name">{{ stat.stat.name | capitalize }}</span>
+          <div class="stat-bar-container">
+            <div class="stat-bar" [style.width.%]="(stat.base_stat / 255) * 100"></div>
+          </div>
+          <span class="stat-value">{{ stat.base_stat }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
